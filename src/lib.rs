@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::BufReader;
 
 use redscript::bundle::{ConstantPool, ScriptBundle};
-use redscript::definition::{AnyDefinition, Definition};
+use redscript::definition::Definition;
 use redscript_decompiler::display::{display_definition_with_line_count, OutputMode};
 
 #[no_mangle]
@@ -25,7 +25,7 @@ pub unsafe extern "C" fn decompile_global(bundle: &ScriptBundle, name: *const c_
     let (_, def) = bundle
         .pool
         .roots()
-        .find(|(_, def)| def.name == name_idx && matches!(def.value, AnyDefinition::Function(_)))?;
+        .find(|(_, def)| def.name == name_idx && def.value.is_function())?;
 
     Some(Decompilation::create(def, &bundle.pool)?.into())
 }
